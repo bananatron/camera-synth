@@ -1,0 +1,7 @@
+node_modules/
+dist/
+artifacts/
+outputs/
+coverage/
+public/tracking/mediapipe/
+package-lock.json

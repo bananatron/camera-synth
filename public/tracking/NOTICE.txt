@@ -1,0 +1,12 @@
+MediaPipe Tasks Vision 1.1.1 — Google, Apache License 2.0.
+
+The unmodified vision_bundle.js and SIMD/non-SIMD WASM runtimes are vendored from:
+https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-1.1.1.tgz
+Upstream package SHA-1: 9a219124017db10bbeb4aedca86d367a640c555d
+License: mediapipe/LICENSE
+
+The unmodified Hand Landmarker model (float16, version 1) is from:
+https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
+Model SHA-256: fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1
+
+hand-worker.js is Camera Synth's inference adapter. All inference runs locally.

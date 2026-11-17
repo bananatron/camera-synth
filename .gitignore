@@ -1,0 +1,28 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+.nyc_output/
+
+# Generated checks, recordings, and local exports
+artifacts/
+outputs/
+test-results/
+playwright-report/
+*.log
+*.wav
+*.tar.gz
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+.openai/
+*.local
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

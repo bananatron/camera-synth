@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#929d9a" />
+    <title>Hand Loop</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="menubar">
+      <div class="menu-brand"><b>▥ Hand Loop</b></div>
+      <button class="menu-help" id="help">Help</button><time id="clock">00:00</time>
+    </header>
+    <main>
+      <section class="window studio" aria-label="Hand Loop studio">
+        <div class="toolbar">
+          <div class="transport">
+            <button id="power" class="power">◉ Start audio</button
+            ><button id="pause" disabled title="Pause or resume session">Ⅱ Pause</button
+            ><button id="record" class="record" disabled>
+              <span class="record-dot"></span><span id="record-label">Record</span
+              ><kbd>R</kbd></button
+            ><button id="cancel" hidden>Cancel</button>
+          </div>
+          <div class="tempo">
+            <label for="bpm">TEMPO</label
+            ><input
+              id="bpm"
+              type="number"
+              value="100"
+              min="40"
+              max="240"
+              step="1"
+              aria-label="Tempo in beats per minute"
+            /><span>BPM</span>
+            <div class="beats" aria-label="Beat indicator"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <label class="master"
+            >VOL
+            <input
+              id="master"
+              type="range"
+              min="0"
+              max="1"
+              step=".01"
+              value=".75"
+              aria-label="Master volume"
+          /></label>
+        </div>
+        <div class="studio-body">
+          <aside class="instrument-panel">
+            <div class="panel-label">HAND INSTRUMENTS</div>
+            <div
+              id="hand-targets"
+              class="hand-targets"
+              role="group"
+              aria-label="Hand assignments"
+            ></div>
+            <div id="instruments" class="instruments" role="group" aria-label="Instruments"></div>
+            <div class="tonality">
+              <label for="root"
+                >KEY
+                <select id="root">
+                  <option value="48">C</option>
+                  <option value="50">D</option>
+                  <option value="52">E</option>
+                  <option value="53">F</option>
+                  <option value="55">G</option>
+                  <option value="57">A</option>
+                  <option value="59">B</option>
+                </select></label
+              ><label for="scale"
+                >SCALE
+                <select id="scale">
+                  <option value="minor">Minor</option>
+                  <option value="major">Major</option>
+                  <option value="pentatonic">Pentatonic</option>
+                  <option value="chromatic">Chromatic</option>
+                </select></label
+              >
+            </div>
+            <label class="sensitivity" for="sensitivity"
+              >GESTURE SENSITIVITY <output id="sensitivity-value">1.5×</output
+              ><input
+                id="sensitivity"
+                type="range"
+                min=".5"
+                max="3"
+                value="1.5"
+                step=".1"
+                aria-label="Gesture sensitivity"
+            /></label>
+            <details class="manual-controls">
+              <summary>Modulation sliders</summary>
+              <label
+                >SPREAD
+                <input
+                  id="spread-control"
+                  type="range"
+                  min="0"
+                  max="1"
+                  value=".35"
+                  step=".01"
+                  aria-label="Manual finger spread" /></label
+              ><label
+                >BEND
+                <input
+                  id="bend-control"
+                  type="range"
+                  min="0"
+                  max="1"
+                  value="0"
+                  step=".01"
+                  aria-label="Manual finger bend" /></label
+              ><label
+                >PINCH
+                <input
+                  id="pinch-control"
+                  type="range"
+                  min="0"
+                  max="1"
+                  value="0"
+                  step=".01"
+                  aria-label="Manual pinch"
+              /></label>
+            </details>
+            <div class="mini-scope">
+              <canvas id="scope" width="260" height="70" aria-label="Audio waveform"></canvas
+              ><span>OUTPUT</span>
+            </div>
+          </aside>
+          <section class="performance">
+            <div class="performance-header">
+              <div class="hand-monitors">
+                <span id="left-monitor">L —</span><span id="right-monitor">R —</span>
+              </div>
+              <span class="panel-label" id="play-label">LEFT</span>
+              <div class="input-actions">
+                <button id="camera">▣ Camera</button
+                ><button id="snap" aria-pressed="false" disabled>ϟ Snap control</button>
+              </div>
+            </div>
+            <div
+              id="playpad"
+              class="playpad"
+              tabindex="0"
+              role="application"
+              aria-label="Synth play pad. Hold and drag to play. Arrow keys move, Enter toggles sound, W and S change wave shape."
+            >
+              <video id="video" muted playsinline aria-label="Mirrored camera preview"></video
+              ><canvas id="hands" aria-hidden="true"></canvas>
+              <div class="pad-grid" aria-hidden="true"></div>
+              <span class="axis axis-top" id="axis-top">FILTER ↑</span
+              ><span class="axis axis-left" id="axis-left">LOW NOTE</span
+              ><span class="axis axis-right" id="axis-right">HIGH NOTE</span
+              ><span class="axis axis-bottom" id="axis-bottom">↓ FILTER</span>
+              <div class="pad-welcome" id="pad-welcome">
+                <span>CAMERA OFF</span><small>Hold + drag to play · Enter to sustain</small>
+              </div>
+              <div id="cursor" class="pad-cursor" hidden><span>01</span></div>
+              <div class="live-badge">
+                <span id="camera-dot" class="status-dot"></span
+                ><span id="camera-state">MOUSE / KEYBOARD</span>
+              </div>
+              <div class="pad-corner" aria-hidden="true">⌖</div>
+            </div>
+            <div class="readouts">
+              <div><span id="note-label">NOTE</span><strong id="note">—</strong></div>
+              <div><span id="brightness-label">FILTER</span><strong id="brightness">—</strong></div>
+              <div><span>WAVE / TILT</span><strong id="wave">—</strong></div>
+              <div><span>HANDS</span><strong id="hand-count">0 / 2</strong></div>
+            </div>
+            <div class="finger-readouts">
+              <label
+                ><span id="spread-label">SPREAD / FM</span
+                ><meter id="spread-meter" min="0" max="1" value="0"></meter
+                ><output id="spread-value">0%</output></label
+              ><label
+                ><span id="bend-label">BEND / VIBRATO</span
+                ><meter id="bend-meter" min="0" max="1" value="0"></meter
+                ><output id="bend-value">0%</output></label
+              ><label
+                ><span>PINCH / RESONANCE</span
+                ><meter id="pinch-meter" min="0" max="1" value="0"></meter
+                ><output id="pinch-value">0%</output></label
+              >
+            </div>
+          </section>
+        </div>
+        <section class="looper-panel" aria-label="Loop deck">
+          <div class="loop-header">
+            <span class="panel-label">LOOPS</span>
+            <div class="loop-meta">
+              <span id="loop-status">Idle</span><span class="snap-tag">SNAP: 1 BAR · 4/4</span>
+            </div>
+          </div>
+          <div id="tracks" class="tracks"><div class="empty-tracks">No loops</div></div>
+          <div class="deck-footer">
+            <span
+              ><b id="track-count">0</b> TRACKS <span class="footer-divider">|</span>
+              <span id="session-time">00:00</span></span
+            >
+            <div>
+              <button id="clear" disabled>Clear</button
+              ><button id="export" disabled>↧ Export WAV</button>
+            </div>
+          </div>
+        </section>
+        <div class="statusbar">
+          <span
+            ><i id="audio-dot" class="status-dot"></i
+            ><span id="status" role="status">Audio off</span></span
+          ><span id="mic-status">MIC OFF</span>
+        </div>
+      </section>
+    </main>
+    <dialog id="help-dialog">
+      <div class="titlebar">
+        <span>Controls</span><button id="close-help" aria-label="Close help">×</button>
+      </div>
+      <div class="help-content">
+        <table>
+          <tr>
+            <td>Move sideways</td>
+            <td>Pitch / drum pattern</td>
+          </tr>
+          <tr>
+            <td>Move vertically</td>
+            <td>Filter / drum BPM (½×, 1×, 2×, 4× tempo)</td>
+          </tr>
+          <tr>
+            <td>Tilt index finger</td>
+            <td>Wave shape / drum tone</td>
+          </tr>
+          <tr>
+            <td>Spread fingers</td>
+            <td>FM + drive / hi-hat density</td>
+          </tr>
+          <tr>
+            <td>Bend index finger</td>
+            <td>Vibrato / drum decay</td>
+          </tr>
+          <tr>
+            <td>Pinch thumb + index</td>
+            <td>Filter resonance</td>
+          </tr>
+          <tr>
+            <td>Close fist</td>
+            <td>Silence</td>
+          </tr>
+        </table>
+        <p>
+          Select Left or Right above the instrument palette to assign its sound and choose the hand
+          controlled by mouse/keyboard. Each hand records to its own labeled loop, with matching
+          boundaries. Silent hands produce no empty loop.
+        </p>
+        <p>
+          R: start / close a loop. Endings snap to the nearest bar. Overdubs start at the next bar.
+          Tempo locks while tracks exist.
+        </p>
+        <p>
+          Mouse: hold + drag. Scroll: wave shape. Keyboard: Enter sustains, arrows move, W/S adjust
+          wave, Escape releases. Sliders control finger modulation without a camera.
+        </p>
+        <p>
+          Snap control needs microphone permission. Use headphones. Sharp noises can also trigger
+          it.
+        </p>
+        <p>Export: 8 bars of the mix. Sessions are held in this tab.</p>
+        <button id="got-it">Close</button>
+      </div>
+    </dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

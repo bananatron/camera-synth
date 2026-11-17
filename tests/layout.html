@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <meta charset="UTF-8" /><title>Hand Loop layout checks</title>
+  <body>
+    <h1>Layout checks</h1>
+    <pre id="results">Running…</pre>
+    <script type="module">
+      const results = document.getElementById('results');
+      let failures = 0;
+      for (const [width, height] of [
+        [360, 800],
+        [390, 844],
+        [1024, 768],
+        [1280, 900],
+        [1920, 1080],
+        [1440, 600],
+      ]) {
+        const iframe = document.createElement('iframe');
+        iframe.style = `position:fixed;left:-3000px;top:0;width:${width}px;height:${height}px;border:0`;
+        iframe.src = '/';
+        const loaded = new Promise((resolve) => (iframe.onload = resolve));
+        document.body.append(iframe);
+        await loaded;
+        await new Promise((r) => setTimeout(r, 150));
+        const doc = iframe.contentDocument,
+          win = iframe.contentWindow,
+          studio = doc.querySelector('.studio').getBoundingClientRect(),
+          pad = doc.querySelector('#playpad').getBoundingClientRect();
+        const errors = [];
+        if (doc.documentElement.scrollWidth > width) errors.push('horizontal overflow');
+        if (
+          doc.querySelectorAll('[data-instrument]').length !== 16 ||
+          doc.querySelectorAll('#hand-targets [data-hand]').length !== 2 ||
+          doc.querySelector('#status').textContent !== 'Audio off'
+        )
+          errors.push('app not initialized');
+        if (width > 720) {
+          if (
+            studio.left !== 0 ||
+            Math.abs(studio.width - width) > 1 ||
+            Math.abs(studio.bottom - height) > 1
+          )
+            errors.push('studio does not fill viewport');
+          if (pad.height < height * (height < 700 ? 0.4 : 0.5))
+            errors.push('camera stage too short: ' + pad.height);
+          if (doc.documentElement.scrollHeight > height) errors.push('page overflows viewport');
+          if (win.getComputedStyle(doc.querySelector('#video')).objectFit !== 'cover')
+            errors.push('camera aspect not preserved');
+        }
+        results.textContent +=
+          '\n' +
+          (errors.length ? 'FAIL ' : 'PASS ') +
+          width +
+          '×' +
+          height +
+          ': ' +
+          (errors.join(', ') ||
+            'viewport filled; camera stage ' +
+              Math.round(pad.width) +
+              '×' +
+              Math.round(pad.height));
+        if (errors.length) failures++;
+        iframe.remove();
+      }
+      results.textContent += '\n' + (failures ? failures + ' FAILED' : 'ALL LAYOUT CHECKS PASSED');
+      document.title = failures ? 'FAIL layout' : 'PASS layout';
+    </script>
+  </body>
+</html>
