@@ -1,5 +1,7 @@
 # Camera Synth
 
+<img width="1512" height="824" alt="Screenshot 2026-11-16 at 5 06 45 PM" src="https://github.com/user-attachments/assets/3c970e60-42a1-4781-aae2-dce05ff13661" />
+
 **Hand Loop** is a local hand-controlled synthesizer, drum machine, and multitrack looper with a retro Macintosh interface. Assign a different instrument to each hand, shape it with finger movements, and record each hand into its own synchronized loop.
 
 ## Run locally
